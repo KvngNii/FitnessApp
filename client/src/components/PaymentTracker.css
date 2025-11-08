@@ -1,0 +1,87 @@
+.payment-tracker {
+  margin-top: 1.5rem;
+}
+
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.payment-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3498db;
+}
+
+.payment-card.due-soon {
+  border-left-color: #f39c12;
+  background: #fffbf0;
+}
+
+.payment-card.overdue {
+  border-left-color: #e74c3c;
+  background: #fff5f5;
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.payment-amount {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.payment-status {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.payment-status.upcoming {
+  background: #d5e8f7;
+  color: #2980b9;
+}
+
+.payment-status.due-soon {
+  background: #fdeacc;
+  color: #d68910;
+}
+
+.payment-status.overdue {
+  background: #f8d7da;
+  color: #c0392b;
+}
+
+.payment-countdown {
+  margin-bottom: 1rem;
+}
+
+.countdown-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.payment-card.overdue .countdown-text {
+  color: #e74c3c;
+}
+
+.payment-card.due-soon .countdown-text {
+  color: #f39c12;
+}
+
+.payment-info p {
+  margin: 0.5rem 0;
+  color: #555;
+}

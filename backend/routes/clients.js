@@ -1,0 +1,121 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../database');
+
+// Get all clients
+router.get('/', (req, res) => {
+  db.all('SELECT * FROM clients ORDER BY created_at DESC', [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
+});
+
+// Get a single client by ID
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  db.get('SELECT * FROM clients WHERE id = ?', [id], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+    res.json(row);
+  });
+});
+
+// Create a new client
+router.post('/', (req, res) => {
+  const { name, email, phone, date_of_birth, gender, goals, notes } = req.body;
+
+  if (!name || !email) {
+    return res.status(400).json({ error: 'Name and email are required' });
+  }
+
+  const sql = `INSERT INTO clients (name, email, phone, date_of_birth, gender, goals, notes)
+               VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+  db.run(sql, [name, email, phone, date_of_birth, gender, goals, notes], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id: this.lastID, message: 'Client created successfully' });
+  });
+});
+
+// Update a client
+router.put('/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, date_of_birth, gender, goals, notes } = req.body;
+
+  const sql = `UPDATE clients
+               SET name = ?, email = ?, phone = ?, date_of_birth = ?,
+                   gender = ?, goals = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+               WHERE id = ?`;
+
+  db.run(sql, [name, email, phone, date_of_birth, gender, goals, notes, id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+    res.json({ message: 'Client updated successfully' });
+  });
+});
+
+// Delete a client
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+
+  db.run('DELETE FROM clients WHERE id = ?', [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+    res.json({ message: 'Client deleted successfully' });
+  });
+});
+
+// Get client's assigned workouts
+router.get('/:id/workouts', (req, res) => {
+  const { id } = req.params;
+
+  const sql = `SELECT cw.*, w.name, w.description, w.difficulty, w.duration_minutes
+               FROM client_workouts cw
+               JOIN workouts w ON cw.workout_id = w.id
+               WHERE cw.client_id = ?
+               ORDER BY cw.assigned_date DESC`;
+
+  db.all(sql, [id], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
+});
+
+// Assign a workout to a client
+router.post('/:id/workouts', (req, res) => {
+  const { id } = req.params;
+  const { workout_id } = req.body;
+
+  if (!workout_id) {
+    return res.status(400).json({ error: 'workout_id is required' });
+  }
+
+  const sql = `INSERT INTO client_workouts (client_id, workout_id) VALUES (?, ?)`;
+
+  db.run(sql, [id, workout_id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id: this.lastID, message: 'Workout assigned successfully' });
+  });
+});
+
+module.exports = router;

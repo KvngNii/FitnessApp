@@ -18,6 +18,14 @@ export const clientAPI = {
   delete: (id) => api.delete(`/clients/${id}`),
   getWorkouts: (id) => api.get(`/clients/${id}/workouts`),
   assignWorkout: (id, workoutId) => api.post(`/clients/${id}/workouts`, { workout_id: workoutId }),
+  uploadProfilePicture: (id, file) => {
+    const formData = new FormData();
+    formData.append('profile_picture', file);
+    return axios.post(`${API_BASE_URL}/clients/${id}/profile-picture`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  deleteProfilePicture: (id) => api.delete(`/clients/${id}/profile-picture`),
 };
 
 // Exercise API
@@ -48,6 +56,17 @@ export const progressAPI = {
   addMeasurements: (data) => api.post('/progress/measurements', data),
   getMeasurements: (clientId, limit) => api.get(`/progress/measurements/client/${clientId}`, { params: { limit } }),
   getStats: (clientId) => api.get(`/progress/stats/client/${clientId}`),
+};
+
+// Payment API
+export const paymentAPI = {
+  getAll: (clientId) => api.get(`/payments/client/${clientId}`),
+  getUpcoming: (days) => api.get('/payments/upcoming', { params: { days } }),
+  getOverdue: () => api.get('/payments/overdue'),
+  create: (data) => api.post('/payments', data),
+  update: (id, data) => api.put(`/payments/${id}`, data),
+  delete: (id) => api.delete(`/payments/${id}`),
+  getStats: (clientId) => api.get(`/payments/stats/client/${clientId}`),
 };
 
 export default api;

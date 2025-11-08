@@ -7,3 +7,4 @@ build/
 *.sqlite
 .vscode/
 coverage/
+backend/uploads/

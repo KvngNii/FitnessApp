@@ -14,7 +14,7 @@ function App() {
       <div className="App">
         <nav className="navbar">
           <div className="nav-container">
-            <Link to="/" className="nav-brand">Fitness App</Link>
+            <Link to="/" className="nav-brand">FitWithNii</Link>
             <ul className="nav-menu">
               <li className="nav-item">
                 <Link to="/" className="nav-link">Dashboard</Link>

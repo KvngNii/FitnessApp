@@ -17,6 +17,7 @@ db.serialize(() => {
       gender TEXT,
       goals TEXT,
       notes TEXT,
+      profile_picture TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -127,6 +128,22 @@ db.serialize(() => {
       thigh_left REAL,
       thigh_right REAL,
       notes TEXT,
+      FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
+    )
+  `);
+
+  // Payments table (track client payments)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS payments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      amount REAL NOT NULL,
+      payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      next_payment_date DATETIME NOT NULL,
+      payment_frequency TEXT DEFAULT 'monthly',
+      payment_method TEXT,
+      notes TEXT,
+      status TEXT DEFAULT 'paid',
       FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
     )
   `);

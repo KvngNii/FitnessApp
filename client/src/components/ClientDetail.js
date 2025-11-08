@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { clientAPI, progressAPI } from '../services/api';
+import PaymentTracker from './PaymentTracker';
 import './ClientDetail.css';
 
 function ClientDetail() {
@@ -11,6 +12,8 @@ function ClientDetail() {
   const [measurements, setMeasurements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showMeasurementModal, setShowMeasurementModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const [measurementData, setMeasurementData] = useState({
     weight: '',
     height: '',
@@ -69,6 +72,34 @@ function ClientDetail() {
     }
   };
 
+  const handleProfilePictureChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Only image files are allowed');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      await clientAPI.uploadProfilePicture(id, file);
+      loadClientData();
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      alert('Failed to upload profile picture');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading client details...</div>;
   }
@@ -83,6 +114,36 @@ function ClientDetail() {
         <div>
           <Link to="/clients" className="back-link">&larr; Back to Clients</Link>
           <h1 className="page-title">{client.name}</h1>
+        </div>
+      </div>
+
+      <div className="profile-section">
+        <div className="profile-picture-container">
+          {client.profile_picture ? (
+            <img
+              src={`http://localhost:5000${client.profile_picture}`}
+              alt={client.name}
+              className="profile-picture"
+            />
+          ) : (
+            <div className="profile-picture-placeholder">
+              <span>{client.name.charAt(0).toUpperCase()}</span>
+            </div>
+          )}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            accept="image/*"
+            onChange={handleProfilePictureChange}
+          />
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => fileInputRef.current.click()}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading...' : 'Change Picture'}
+          </button>
         </div>
       </div>
 
@@ -192,6 +253,10 @@ function ClientDetail() {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="card">
+            <PaymentTracker clientId={id} onPaymentAdded={loadClientData} />
           </div>
         </div>
       </div>

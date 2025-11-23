@@ -10,6 +10,7 @@ const exerciseRoutes = require('./routes/exercises');
 const workoutRoutes = require('./routes/workouts');
 const progressRoutes = require('./routes/progress');
 const paymentRoutes = require('./routes/payments');
+const momoRoutes = require('./routes/momo');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -28,6 +29,7 @@ app.use('/api/exercises', exerciseRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/momo', momoRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

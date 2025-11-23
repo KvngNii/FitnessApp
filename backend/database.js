@@ -148,6 +148,29 @@ db.serialize(() => {
     )
   `);
 
+  // MoMo transactions table (track mobile money transactions)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS momo_transactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      payment_id INTEGER,
+      client_id INTEGER NOT NULL,
+      amount REAL NOT NULL,
+      currency TEXT DEFAULT 'GHS',
+      phone_number TEXT NOT NULL,
+      reference_id TEXT UNIQUE NOT NULL,
+      external_id TEXT,
+      status TEXT DEFAULT 'pending',
+      payer_message TEXT,
+      payee_note TEXT,
+      financial_transaction_id TEXT,
+      reason TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (payment_id) REFERENCES payments (id) ON DELETE SET NULL,
+      FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
+    )
+  `);
+
   console.log('Database tables initialized successfully');
 });
 

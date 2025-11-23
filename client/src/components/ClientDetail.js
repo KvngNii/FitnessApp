@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { clientAPI, progressAPI } from '../services/api';
 import PaymentTracker from './PaymentTracker';
+import MoMoPayment from './MoMoPayment';
 import './ClientDetail.css';
 
 function ClientDetail() {
@@ -257,6 +258,14 @@ function ClientDetail() {
 
           <div className="card">
             <PaymentTracker clientId={id} onPaymentAdded={loadClientData} />
+          </div>
+
+          <div className="card">
+            <MoMoPayment
+              clientId={id}
+              clientName={client.name}
+              onPaymentSuccess={loadClientData}
+            />
           </div>
         </div>
       </div>
